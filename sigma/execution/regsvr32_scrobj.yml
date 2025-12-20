@@ -1,0 +1,33 @@
+title: Regsvr32 Scrobj DLL / Scriptlet Execution
+id: 8e2d9e9e-90d8-4b61-a0d6-6a02e2db0f39
+status: experimental
+description: Detects regsvr32 abuse with scrobj.dll/scriptlet execution which can proxy script execution and evade defenses.
+author: N SV
+date: 2025-12-20
+references:
+  - https://attack.mitre.org/techniques/T1218/010/
+tags:
+  - attack.defense_evasion
+  - attack.execution
+  - attack.t1218.010
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\regsvr32.exe'
+    CommandLine|contains:
+      - 'scrobj.dll'
+      - '/i:'
+      - 'http://'
+      - 'https://'
+      - '.sct'
+  condition: selection
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Rare legitimate usage in enterprise environments
+level: high

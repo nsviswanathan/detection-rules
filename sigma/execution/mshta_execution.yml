@@ -1,0 +1,32 @@
+title: Suspicious MSHTA Execution
+id: 1d87b6d4-6c87-4d17-9a76-c8f8d1e9b3e6
+status: experimental
+description: Detects suspicious mshta usage including remote HTA execution and script-based abuse.
+author: N SV
+date: 2025-12-20
+references:
+  - https://attack.mitre.org/techniques/T1218/005/
+tags:
+  - attack.execution
+  - attack.t1218.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\mshta.exe'
+    CommandLine|contains:
+      - 'http://'
+      - 'https://'
+      - 'javascript:'
+      - 'vbscript:'
+      - '.hta'
+  condition: selection
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Legacy enterprise applications using HTA (uncommon; baseline required)
+level: high

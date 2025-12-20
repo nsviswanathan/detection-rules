@@ -1,0 +1,36 @@
+title: Registry Run Keys Persistence via Reg.exe
+id: 0b8c02a0-6fb1-4984-a56e-6e0d6b3f1bd1
+status: experimental
+description: Detects adding/modifying common Run/RunOnce keys using reg.exe for persistence.
+author: N SV
+date: 2025-12-20
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\reg.exe'
+    CommandLine|contains:
+      - ' add '
+      - 'Run'
+      - 'RunOnce'
+  selection_paths:
+    CommandLine|contains:
+      - 'HKCU\Software\Microsoft\Windows\CurrentVersion\Run'
+      - 'HKLM\Software\Microsoft\Windows\CurrentVersion\Run'
+      - 'HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+      - 'HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+  condition: selection and selection_paths
+fields:
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Software installers/updaters
+  - IT scripts setting autoruns
+level: medium

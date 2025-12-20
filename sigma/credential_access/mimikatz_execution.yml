@@ -1,0 +1,41 @@
+title: Mimikatz Execution Detected
+id: 9f2a0b51-3f44-4c36-9a2d-5d3d2c8b1e21
+status: experimental
+description: Detects potential execution of Mimikatz via process names, command-line indicators, or known module patterns.
+author: N SV
+date: 2025-12-20
+references:
+  - https://attack.mitre.org/software/S0002/
+tags:
+  - attack.credential_access
+  - attack.t1003
+  - attack.s0002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\mimikatz.exe'
+      - '\mimi.exe'
+  selection_cmd:
+    CommandLine|contains:
+      - 'sekurlsa::logonpasswords'
+      - 'sekurlsa::wdigest'
+      - 'lsadump::sam'
+      - 'privilege::debug'
+      - 'token::elevate'
+  selection_renamed:
+    CommandLine|contains:
+      - 'sekurlsa::'
+      - 'lsadump::'
+  condition: selection_img or selection_cmd or selection_renamed
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Legitimate security testing / red team activity
+  - Incident response tooling invoking Mimikatz artifacts
+level: high

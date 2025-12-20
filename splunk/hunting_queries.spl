@@ -1,0 +1,69 @@
+############################################################
+# Detection Rule Repository - Splunk Hunting Queries
+# Author: N SV
+# Date: 2025-12-20
+# Notes:
+# - Update index/sourcetype based on your environment.
+# - These are starter hunts; tune with allowlists & baselines.
+############################################################
+
+# 1) Encoded PowerShell usage
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+(CommandLine="*-enc *" OR CommandLine="*-encodedcommand*" OR CommandLine="*FromBase64String*")
+| stats count values(ParentImage) as parent values(User) as user by Computer, Image, CommandLine
+| sort - count
+
+# 2) MSHTA remote/script execution
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+Image="*\\mshta.exe" (CommandLine="*http*" OR CommandLine="*javascript:*" OR CommandLine="*vbscript:*" OR CommandLine="*.hta*")
+| stats count values(ParentImage) as parent values(User) as user by Computer, CommandLine
+| sort - count
+
+# 3) Regsvr32 scrobj abuse
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+Image="*\\regsvr32.exe" (CommandLine="*scrobj.dll*" OR CommandLine="*.sct*" OR CommandLine="*http*")
+| stats count values(ParentImage) as parent values(User) as user by Computer, CommandLine
+| sort - count
+
+# 4) LSASS dump patterns (procdump, comsvcs)
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+(
+  (Image="*\\procdump.exe" AND CommandLine="*lsass*" AND CommandLine="*-ma*")
+  OR
+  (Image="*\\rundll32.exe" AND CommandLine="*comsvcs.dll*" AND CommandLine="*MiniDump*")
+)
+| stats count values(User) as user values(ParentImage) as parent by Computer, Image, CommandLine
+| sort - count
+
+# 5) Suspicious scheduled task creation
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+Image="*\\schtasks.exe" (CommandLine="*/create*" OR CommandLine="*/change*")
+(CommandLine="*\\AppData\\*" OR CommandLine="*\\Temp\\*" OR CommandLine="*powershell*" OR CommandLine="*cmd.exe /c*")
+| stats count values(User) as user values(ParentImage) as parent by Computer, CommandLine
+| sort - count
+
+# 6) Registry Run key persistence via reg.exe
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+Image="*\\reg.exe" CommandLine="*\\CurrentVersion\\Run*" CommandLine="* add *"
+| stats count values(User) as user values(ParentImage) as parent by Computer, CommandLine
+| sort - count
+
+# 7) PsExec usage
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+(Image="*\\psexec.exe" OR Image="*\\paexec.exe" OR CommandLine="*PSEXESVC*")
+| stats count values(User) as user values(ParentImage) as parent by Computer, Image, CommandLine
+| sort - count
+
+# 8) WMI remote process execution (wmic /node + create)
+index=* (sourcetype=WinEventLog:Security OR sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational)
+(EventCode=4688 OR EventCode=1)
+Image="*\\wmic.exe" CommandLine="*/node:*" CommandLine="*process*" CommandLine="*call*" CommandLine="*create*"
+| stats count values(User) as user values(ParentImage) as parent by Computer, CommandLine
+| sort - count

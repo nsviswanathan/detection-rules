@@ -1,0 +1,38 @@
+title: WMI Remote Process Execution
+id: b6a9c5b9-5df2-4f57-9c41-1d7b9f2e4d8b
+status: experimental
+description: Detects common WMI-based lateral movement patterns using WMIC or PowerShell WMI methods.
+author: N SV
+date: 2025-12-20
+references:
+  - https://attack.mitre.org/techniques/T1047/
+tags:
+  - attack.lateral_movement
+  - attack.t1047
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_wmic:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains|all:
+      - '/node:'
+      - 'process'
+      - 'call'
+      - 'create'
+  selection_powershell_wmi:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains:
+      - 'Invoke-WmiMethod'
+      - 'Get-WmiObject'
+      - 'Win32_Process'
+  condition: selection_wmic or selection_powershell_wmi
+fields:
+  - Image
+  - CommandLine
+  - User
+falsepositives:
+  - Legitimate remote administration scripts (baseline + restrict to admin endpoints)
+level: high

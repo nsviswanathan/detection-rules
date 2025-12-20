@@ -1,0 +1,42 @@
+title: LSASS Memory Dump Attempt
+id: 0c8f5e02-3a8f-4f13-85b7-2c9b5b5a6d1a
+status: experimental
+description: Detects common LSASS dumping techniques via known tools and suspicious command-line patterns.
+author: N SV
+date: 2025-12-20
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_procdump:
+    Image|endswith: '\procdump.exe'
+    CommandLine|contains:
+      - ' -ma '
+      - ' lsass'
+  selection_rundll32_comsvcs:
+    Image|endswith: '\rundll32.exe'
+    CommandLine|contains|all:
+      - 'comsvcs.dll'
+      - 'MiniDump'
+  selection_taskmgr:
+    Image|endswith: '\taskmgr.exe'
+    CommandLine|contains:
+      - 'lsass'
+  selection_dbghelp:
+    CommandLine|contains:
+      - 'MiniDumpWriteDump'
+  condition: selection_procdump or selection_rundll32_comsvcs or selection_taskmgr or selection_dbghelp
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Legitimate memory dumps during IR (rare; should be approved)
+  - Admin troubleshooting with approved tools (document allowlist)
+level: critical
