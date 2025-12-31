@@ -6,9 +6,6 @@ A **production-ready detection engineering repository** containing:
 - **Splunk SPL** hunting queries to operationalize detections
 - A **MITRE ATT&CK coverage matrix** to track technique coverage and gaps
 
-**Resume line**
-> Built a detection rule repository with 30+ Sigma/YARA rules covering 20+ MITRE ATT&CK techniques; validated detections using Atomic Red Team adversary emulation.
-
 ---
 
 ## What’s in this repo
