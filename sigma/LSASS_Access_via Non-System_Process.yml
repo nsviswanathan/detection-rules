@@ -1,0 +1,16 @@
+title: Suspicious Access to LSASS Process
+status: experimental
+description: Detects non-system processes referencing lsass.exe
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  lsass:
+    CommandLine|contains: 'lsass'
+  condition: lsass
+falsepositives:
+  - Debugging tools
+level: high
