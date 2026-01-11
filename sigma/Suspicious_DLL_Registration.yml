@@ -1,0 +1,19 @@
+title: Regsvr32 Suspicious DLL Registration
+status: experimental
+description: Detects regsvr32 registering DLLs from suspicious locations
+tags:
+  - attack.defense_evasion
+  - attack.t1218.010
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  regsvr:
+    Image|endswith: '\regsvr32.exe'
+    CommandLine|contains:
+      - '\AppData\'
+      - '\Temp\'
+  condition: regsvr
+falsepositives:
+  - Rare installer behavior
+level: high
