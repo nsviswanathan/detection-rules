@@ -1,0 +1,26 @@
+title: System Binary Masquerading from Non-System Path
+status: experimental
+description: Detects execution of common Windows system binaries from suspicious directories
+tags:
+  - attack.defense_evasion
+  - attack.t1036.005
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  system_name:
+    Image|endswith:
+      - '\svchost.exe'
+      - '\lsass.exe'
+      - '\services.exe'
+      - '\csrss.exe'
+  wrong_path:
+    Image|contains:
+      - '\Users\'
+      - '\Temp\'
+      - '\AppData\'
+      - '\Public\'
+  condition: system_name and wrong_path
+falsepositives:
+  - Very rare (often strong indicator of compromise)
+level: high
