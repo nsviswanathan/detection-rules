@@ -1,0 +1,22 @@
+title: Windows Event Log Cleared
+status: experimental
+description: Detects clearing of Windows Event Logs using wevtutil or PowerShell
+tags:
+  - attack.defense_evasion
+  - attack.t1070.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  wevtutil:
+    Image|endswith: '\wevtutil.exe'
+    CommandLine|contains: ' cl '
+  powershell:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains: 'Clear-EventLog'
+  condition: wevtutil or powershell
+falsepositives:
+  - Rare administrative troubleshooting
+level: high
