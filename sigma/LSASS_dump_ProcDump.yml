@@ -1,0 +1,29 @@
+title: LSASS Dump via ProcDump or Similar Tools
+status: experimental
+description: Detects attempts to dump LSASS memory using procdump or similar tooling
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  dump_tool:
+    Image|endswith:
+      - '\procdump.exe'
+      - '\procdump64.exe'
+      - '\rundll32.exe'
+      - '\taskmgr.exe'
+  lsass_target:
+    CommandLine|contains:
+      - 'lsass'
+      - 'lsass.exe'
+  procdump_flags:
+    CommandLine|contains:
+      - ' -ma '
+      - ' -mm '
+      - ' -mp '
+  condition: (dump_tool and lsass_target and procdump_flags) or (Image|endswith: '\procdump.exe' and lsass_target)
+falsepositives:
+  - Legit incident response forensics (rare, should be ticketed)
+level: high
