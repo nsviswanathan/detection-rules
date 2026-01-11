@@ -1,0 +1,19 @@
+title: Remote Registry Service Started
+status: experimental
+description: Detects enabling of RemoteRegistry service, often used for lateral movement
+tags:
+  - attack.lateral_movement
+  - attack.t1021.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  service:
+    Image|endswith: '\sc.exe'
+    CommandLine|contains|all:
+      - 'start'
+      - 'RemoteRegistry'
+  condition: service
+falsepositives:
+  - Admin troubleshooting
+level: high
