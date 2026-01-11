@@ -1,0 +1,26 @@
+title: WMI Remote Process Creation via WMIC
+status: experimental
+description: Detects WMIC usage that creates a process remotely using Win32_Process Create
+tags:
+  - attack.lateral_movement
+  - attack.t1047
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  wmic_exec:
+    Image|endswith: '\wmic.exe'
+  remote_node:
+    CommandLine|contains:
+      - '/node:'
+      - '/user:'
+      - '/password:'
+  proc_create:
+    CommandLine|contains|all:
+      - 'process'
+      - 'call'
+      - 'create'
+  condition: wmic_exec and remote_node and proc_create
+falsepositives:
+  - Legit IT automation using WMIC for remote management
+level: high
