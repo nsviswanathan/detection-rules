@@ -1,0 +1,20 @@
+title: RDP Client Connection Initiated (mstsc.exe)
+status: experimental
+description: Detects RDP client usage indicating potential interactive lateral movement
+tags:
+  - attack.lateral_movement
+  - attack.t1021.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\mstsc.exe'
+  target_hint:
+    CommandLine|contains:
+      - ' /v:'
+      - ' -v:'
+  condition: selection and target_hint
+falsepositives:
+  - Legitimate RDP administration/helpdesk activity
+level: medium
