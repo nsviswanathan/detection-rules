@@ -1,0 +1,28 @@
+title: PsExec Remote Execution Indicators
+status: experimental
+description: Detects Sysinternals PsExec usage for remote command execution (lateral movement)
+tags:
+  - attack.lateral_movement
+  - attack.t1021.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  psexec_image:
+    Image|endswith:
+      - '\psexec.exe'
+      - '\psexesvc.exe'
+  psexec_cli:
+    CommandLine|contains:
+      - '\\'
+      - ' -accepteula'
+      - ' -s'
+      - ' -u '
+      - ' -p '
+  service_artifact:
+    CommandLine|contains:
+      - 'PSEXESVC'
+  condition: psexec_image or (Image|endswith: '\psexec.exe' and psexec_cli) or service_artifact
+falsepositives:
+  - Legitimate remote administration using PsExec
+level: high
