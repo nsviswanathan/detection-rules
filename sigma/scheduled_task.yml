@@ -1,26 +1,24 @@
-title: Suspicious Process Execution from User Writable Directory
+title: Suspicious Scheduled Task Creation
 status: experimental
-description: Detects execution of common system binaries from suspicious user-writable directories
+description: Detects creation of scheduled tasks via schtasks.exe
 tags:
-  - attack.execution
-  - attack.t1059
+  - attack.persistence
+  - attack.t1053.005
 logsource:
   product: windows
   category: process_creation
 detection:
-  suspicious_image:
-    Image|endswith:
-      - '\cmd.exe'
-      - '\powershell.exe'
-      - '\wscript.exe'
-      - '\cscript.exe'
-      - '\mshta.exe'
-  suspicious_path:
-    Image|contains:
-      - '\Users\Public\'
+  schtasks_exec:
+    Image|endswith: '\schtasks.exe'
+  task_create:
+    CommandLine|contains:
+      - '/create'
+  suspicious_target:
+    CommandLine|contains:
       - '\AppData\'
       - '\Temp\'
-  condition: suspicious_image and suspicious_path
+      - '\Users\Public\'
+  condition: schtasks_exec and task_create and suspicious_target
 falsepositives:
-  - Rare administrative scripts
+  - Legitimate admin-created scheduled tasks
 level: high
