@@ -1,0 +1,16 @@
+title: UAC Bypass via fodhelper.exe
+status: experimental
+description: Detects fodhelper.exe execution which can be abused for UAC bypass
+tags:
+  - attack.privilege_escalation
+  - attack.t1548.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  fodhelper:
+    Image|endswith: '\fodhelper.exe'
+  condition: fodhelper
+falsepositives:
+  - Rare legitimate usage
+level: high
