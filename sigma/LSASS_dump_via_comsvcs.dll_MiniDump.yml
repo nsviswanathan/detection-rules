@@ -1,0 +1,23 @@
+title: LSASS Dump via comsvcs.dll MiniDump Using rundll32
+status: experimental
+description: Detects rundll32 invoking comsvcs.dll MiniDump to dump LSASS
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\rundll32.exe'
+    CommandLine|contains|all:
+      - 'comsvcs.dll'
+      - 'MiniDump'
+  lsass_hint:
+    CommandLine|contains:
+      - 'lsass'
+      - 'lsass.exe'
+  condition: selection and lsass_hint
+falsepositives:
+  - Very rare legitimate troubleshooting
+level: high
