@@ -1,0 +1,27 @@
+title: Registry Hive Dump for SAM SECURITY SYSTEM via reg.exe
+status: experimental
+description: Detects dumping of SAM/SECURITY/SYSTEM hives using reg save (credential access)
+tags:
+  - attack.credential_access
+  - attack.t1003.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  reg_save:
+    Image|endswith: '\reg.exe'
+    CommandLine|contains: ' save '
+  hive_targets:
+    CommandLine|contains:
+      - 'HKLM\SAM'
+      - 'HKLM\SECURITY'
+      - 'HKLM\SYSTEM'
+  suspicious_out:
+    CommandLine|contains:
+      - '\Users\Public\'
+      - '\Temp\'
+      - '\AppData\'
+  condition: reg_save and hive_targets and suspicious_out
+falsepositives:
+  - Legit backup/admin actions (should be rare; validate destination path + change control)
+level: high
