@@ -1,0 +1,18 @@
+title: DNS Query by Suspicious Binary
+status: experimental
+description: Detects DNS queries initiated by uncommon executables
+tags:
+  - attack.command_and_control
+  - attack.t1071.004
+logsource:
+  product: windows
+  category: dns
+detection:
+  suspicious_proc:
+    Image|contains:
+      - '\Temp\'
+      - '\AppData\'
+  condition: suspicious_proc
+falsepositives:
+  - Rare portable apps
+level: medium
