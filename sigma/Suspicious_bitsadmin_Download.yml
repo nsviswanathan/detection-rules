@@ -1,0 +1,19 @@
+title: File Download via Bitsadmin
+status: experimental
+description: Detects bitsadmin downloading files from the internet
+tags:
+  - attack.command_and_control
+  - attack.t1105
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  bits:
+    Image|endswith: '\bitsadmin.exe'
+    CommandLine|contains:
+      - '/transfer'
+      - 'http'
+  condition: bits
+falsepositives:
+  - Rare legacy admin usage
+level: high
