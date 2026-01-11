@@ -1,0 +1,26 @@
+title: Suspicious Process Execution from User Writable Directory
+status: experimental
+description: Detects execution of common system binaries from suspicious user-writable directories
+tags:
+  - attack.execution
+  - attack.t1059
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  suspicious_image:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+  suspicious_path:
+    Image|contains:
+      - '\Users\Public\'
+      - '\AppData\'
+      - '\Temp\'
+  condition: suspicious_image and suspicious_path
+falsepositives:
+  - Rare administrative scripts
+level: high
