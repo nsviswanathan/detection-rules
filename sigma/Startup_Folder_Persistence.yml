@@ -1,0 +1,16 @@
+title: Startup Folder Persistence via Executable Drop
+status: experimental
+description: Detects executables written to Startup folder
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  product: windows
+  category: file_event
+detection:
+  startup:
+    TargetFilename|contains: '\Startup\'
+  condition: startup
+falsepositives:
+  - Legit startup apps
+level: medium
