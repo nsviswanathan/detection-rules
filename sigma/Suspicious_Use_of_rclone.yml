@@ -1,0 +1,16 @@
+title: Rclone Execution on Endpoint
+status: experimental
+description: Detects execution of rclone, often used for data exfiltration
+tags:
+  - attack.exfiltration
+  - attack.t1567
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  rclone:
+    Image|endswith: '\rclone.exe'
+  condition: rclone
+falsepositives:
+  - Legit backup usage (rare on endpoints)
+level: high
