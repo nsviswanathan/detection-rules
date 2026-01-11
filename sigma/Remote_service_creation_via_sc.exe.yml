@@ -1,0 +1,32 @@
+title: Remote Service Creation via SC.exe
+status: experimental
+description: Detects remote Windows service creation using sc.exe (often used for lateral movement)
+tags:
+  - attack.lateral_movement
+  - attack.t1021.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  sc_exec:
+    Image|endswith: '\sc.exe'
+  remote_host:
+    CommandLine|contains: '\\\\'
+  service_ops:
+    CommandLine|contains:
+      - ' create '
+      - ' start '
+      - ' config '
+  binpath_hint:
+    CommandLine|contains:
+      - ' binPath='
+      - 'binpath='
+  suspicious_payload_path:
+    CommandLine|contains:
+      - '\Users\Public\'
+      - '\Temp\'
+      - '\AppData\'
+  condition: sc_exec and remote_host and service_ops and binpath_hint and suspicious_payload_path
+falsepositives:
+  - Legitimate remote service deployment/management tools
+level: high
