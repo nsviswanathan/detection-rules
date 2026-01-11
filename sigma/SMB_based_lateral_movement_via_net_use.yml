@@ -1,0 +1,23 @@
+title: SMB Admin Share Access via Net Use
+status: experimental
+description: Detects usage of net.exe to access administrative SMB shares on remote systems
+tags:
+  - attack.lateral_movement
+  - attack.t1021.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  net_exec:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+  admin_share:
+    CommandLine|contains:
+      - '\\\\'
+      - 'ADMIN$'
+      - 'C$'
+  condition: net_exec and admin_share
+falsepositives:
+  - Legitimate administrative file access
+level: high
