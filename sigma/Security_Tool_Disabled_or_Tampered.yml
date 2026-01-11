@@ -1,0 +1,26 @@
+title: Microsoft Defender Disabled or Stopped
+status: experimental
+description: Detects attempts to disable Microsoft Defender services or protections
+tags:
+  - attack.defense_evasion
+  - attack.t1562.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  sc_stop:
+    Image|endswith: '\sc.exe'
+    CommandLine|contains|all:
+      - ' stop '
+      - 'WinDefend'
+  defender_ps:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains:
+      - 'Set-MpPreference'
+      - 'DisableRealtimeMonitoring'
+  condition: sc_stop or defender_ps
+falsepositives:
+  - Legitimate maintenance scripts
+level: high
