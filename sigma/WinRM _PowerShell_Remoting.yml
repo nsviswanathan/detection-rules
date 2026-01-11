@@ -1,0 +1,27 @@
+title: PowerShell Remoting Usage (WinRM)
+status: experimental
+description: Detects PowerShell remoting usage via Enter-PSSession or Invoke-Command
+tags:
+  - attack.lateral_movement
+  - attack.t1021.006
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  ps:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  remoting:
+    CommandLine|contains:
+      - 'Enter-PSSession'
+      - 'Invoke-Command'
+      - 'New-PSSession'
+  computername:
+    CommandLine|contains:
+      - '-ComputerName'
+      - '-Session'
+  condition: ps and remoting and computername
+falsepositives:
+  - Legitimate admin automation using WinRM/PowerShell remoting
+level: high
