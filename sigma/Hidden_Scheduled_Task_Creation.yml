@@ -1,0 +1,20 @@
+title: Hidden Scheduled Task Created as SYSTEM
+status: experimental
+description: Detects scheduled tasks created to run as SYSTEM, often used for stealthy persistence
+tags:
+  - attack.persistence
+  - attack.t1053.005
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  schtasks:
+    Image|endswith: '\schtasks.exe'
+    CommandLine|contains|all:
+      - '/create'
+      - '/ru'
+      - 'SYSTEM'
+  condition: schtasks
+falsepositives:
+  - Legit enterprise scheduled tasks
+level: high
