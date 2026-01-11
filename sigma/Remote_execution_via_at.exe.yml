@@ -1,0 +1,22 @@
+title: Remote Command Execution via AT.exe
+status: experimental
+description: Detects usage of at.exe to schedule commands on remote systems
+tags:
+  - attack.lateral_movement
+  - attack.t1053.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  at_exec:
+    Image|endswith: '\at.exe'
+  remote_host:
+    CommandLine|contains: '\\\\'
+  schedule_cmd:
+    CommandLine|contains:
+      - 'cmd.exe'
+      - 'powershell'
+  condition: at_exec and remote_host and schedule_cmd
+falsepositives:
+  - Rare legacy administrative usage
+level: high
