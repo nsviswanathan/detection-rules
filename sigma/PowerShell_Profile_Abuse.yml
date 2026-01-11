@@ -1,0 +1,18 @@
+title: PowerShell Profile Modification
+status: experimental
+description: Detects modification of PowerShell profile files for persistence
+tags:
+  - attack.persistence
+  - attack.t1546.013
+logsource:
+  product: windows
+  category: file_event
+detection:
+  profile_file:
+    TargetFilename|endswith:
+      - '\Microsoft.PowerShell_profile.ps1'
+      - '\profile.ps1'
+  condition: profile_file
+falsepositives:
+  - Legit PowerShell customization
+level: medium
