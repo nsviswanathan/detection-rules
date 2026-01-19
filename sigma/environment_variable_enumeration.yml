@@ -1,0 +1,11 @@
+title: Environment Variable Enumeration
+status: experimental
+description: Detects enumeration of environment variables
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    CommandLine|contains: "set"
+  condition: selection
+level: low

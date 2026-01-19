@@ -1,0 +1,11 @@
+title: Kerberos SPN Enumeration
+status: experimental
+description: Detects SPN enumeration using setspn
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: "setspn.exe"
+  condition: selection
+level: high

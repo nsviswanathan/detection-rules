@@ -1,0 +1,11 @@
+title: DNS Cache Enumeration
+status: experimental
+description: Detects DNS cache enumeration via ipconfig
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    CommandLine|contains: "/displaydns"
+  condition: selection
+level: medium

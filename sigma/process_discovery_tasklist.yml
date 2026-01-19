@@ -1,0 +1,11 @@
+title: Process Discovery Using Tasklist
+status: experimental
+description: Detects tasklist usage for process discovery
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: "tasklist.exe"
+  condition: selection
+level: low

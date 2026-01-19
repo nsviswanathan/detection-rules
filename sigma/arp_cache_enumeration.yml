@@ -1,0 +1,13 @@
+title: ARP Cache Enumeration
+status: experimental
+description: Detects ARP cache enumeration
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    CommandLine|contains|all:
+      - "arp"
+      - "-a"
+  condition: selection
+level: low

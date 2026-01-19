@@ -1,0 +1,12 @@
+title: Scheduled Task Enumeration
+status: experimental
+description: Detects enumeration of scheduled tasks
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: "schtasks.exe"
+    CommandLine|contains: "/query"
+  condition: selection
+level: medium

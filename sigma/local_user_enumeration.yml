@@ -1,0 +1,13 @@
+title: Local User Enumeration via net user
+status: experimental
+description: Detects local user enumeration using net user command
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    CommandLine|contains|all:
+      - "net"
+      - "user"
+  condition: selection
+level: medium

@@ -1,0 +1,11 @@
+title: Local Admin Group Enumeration
+status: experimental
+description: Detects enumeration of local administrators group
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    CommandLine|contains: "Administrators"
+  condition: selection
+level: medium

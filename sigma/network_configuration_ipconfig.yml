@@ -1,0 +1,11 @@
+title: Network Configuration Discovery via ipconfig
+status: experimental
+description: Detects ipconfig usage for network discovery
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: "ipconfig.exe"
+  condition: selection
+level: low
